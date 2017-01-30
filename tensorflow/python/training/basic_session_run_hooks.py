@@ -180,7 +180,8 @@ class LoggingTensorHook(session_run_hook.SessionRunHook):
         stats = []
         for tag in self._tag_order:
           stats.append("%s = %s" % (tag, run_values.results[tag]))
-        logging.info("%s (%.3f sec)", ", ".join(stats), elapsed_secs)
+        if elapsed_secs is not None:
+          logging.info("%s (%.3f sec)", ", ".join(stats), elapsed_secs)
       np.set_printoptions(**original)
     self._iter_count += 1
 
