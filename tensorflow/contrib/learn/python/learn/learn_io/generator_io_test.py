@@ -54,7 +54,7 @@ class GeneratorIoTest(test.TestCase):
       res = session.run([features, target])
       self.assertAllEqual(res[0]['a'], np.asarray([0, 1]).reshape(-1, 1))
       self.assertAllEqual(res[0]['b'], np.asarray([32, 33]).reshape(-1, 1))
-      self.assertAllEqual(res[1]['label'], np.asarray([-32, -31]).reshape(-1, 1))
+      self.assertAllEqual(res[1], np.asarray([-32, -31]).reshape(-1, 1))
 
       session.run([features])
       with self.assertRaises(errors.OutOfRangeError):
@@ -75,7 +75,7 @@ class GeneratorIoTest(test.TestCase):
   
     with self.test_session() as session:
       input_fn = generator_io.generator_input_fn(
-        generator, target_key='label', batch_size=2, shuffle=False, num_epochs=1)
+        generator, target_key=['label','label2'], batch_size=2, shuffle=False, num_epochs=1)
       features, target = input_fn()
     
       coord = coordinator.Coordinator()
@@ -113,7 +113,7 @@ class GeneratorIoTest(test.TestCase):
       res = session.run([features, target])
       self.assertAllEqual(res[0]['a'], np.vstack((np.zeros((10, 10)), np.ones((10, 10)))).reshape(2, 10, 10))
       self.assertAllEqual(res[0]['b'], np.vstack((np.zeros((5, 5)), np.ones((5, 5)))).reshape(2, 5, 5) + 32)
-      self.assertAllEqual(res[1]['label'], np.vstack((np.zeros((3, 3)), np.ones((3, 3)))).reshape(2, 3, 3) - 32)
+      self.assertAllEqual(res[1], np.vstack((np.zeros((3, 3)), np.ones((3, 3)))).reshape(2, 3, 3) - 32)
       
       coord.request_stop()
       coord.join(threads)

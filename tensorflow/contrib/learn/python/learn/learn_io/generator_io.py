@@ -67,7 +67,7 @@ def generator_input_fn(x,
 
   Returns:
     Function, that returns a feature `dict` with `Tensors` and
-     an optional label `dict` with `Tensors`
+     an optional label `dict` with `Tensors`, or if target_key is `str` label is a `Tensor`
 
   Raises:
     TypeError: `x` is not `FunctionType`.
@@ -111,7 +111,10 @@ def generator_input_fn(x,
     
     features = dict(zip(input_keys, features))
     if target_key is not None:
-      target = {key: features.pop(key) for key in target_key}
+      if len(target_key) > 1:
+        target = {key: features.pop(key) for key in target_key}
+      else:
+        target = features.pop(target_key[0])
       return features, target
     return features
   return _generator_input_fn
