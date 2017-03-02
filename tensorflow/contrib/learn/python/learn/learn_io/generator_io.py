@@ -111,7 +111,8 @@ def generator_input_fn(x,
     
     features = (queue.dequeue_many(batch_size) if num_epochs is None
                 else queue.dequeue_up_to(batch_size))
-    
+    if not isinstance(features, list):
+      features = [features]
     features = dict(zip(input_keys, features))
     if target_key is not None:
       if len(target_key) > 1:
