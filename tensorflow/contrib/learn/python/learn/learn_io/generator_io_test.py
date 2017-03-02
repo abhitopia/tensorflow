@@ -63,6 +63,30 @@ class GeneratorIoTest(test.TestCase):
       coord.request_stop()
       coord.join(threads)
 
+  def testGeneratorSingleInputFn(self):
+  
+    def generator():
+      for index in range(2):
+        yield {'a': np.ones(1) * index}
+  
+    with self.test_session() as session:
+      input_fn = generator_io.generator_input_fn(
+        generator, target_key=None, batch_size=2, shuffle=False, num_epochs=1)
+      features, target = input_fn()
+    
+      coord = coordinator.Coordinator()
+      threads = queue_runner_impl.start_queue_runners(session, coord=coord)
+    
+      res = session.run([features, target])
+      self.assertAllEqual(res[0]['a'], np.asarray([0, 1]).reshape(-1, 1))
+    
+      session.run([features])
+      with self.assertRaises(errors.OutOfRangeError):
+        session.run([features, target])
+    
+      coord.request_stop()
+      coord.join(threads)
+      
   def testGeneratorInputFnLabelDict(self):
   
     def generator():
