@@ -279,15 +279,15 @@ def enqueue_data(data,
       queue_shapes = [(), data.shape[1:]]
       get_feed_fn = _ArrayFeedFn
     elif isinstance(data, collections.OrderedDict):
-      types = [dtypes.as_dtype(col.dtype) for col in data.values()]
-      queue_shapes = [col.shape[1:] for col in data.values()]
+      types = [dtypes.int64] + [
+        dtypes.as_dtype(col.dtype) for col in data.values()
+        ]
+      queue_shapes = [()] + [col.shape[1:] for col in data.values()]
       get_feed_fn = _OrderedDictNumpyFeedFn
     elif isinstance(data, FunctionType):
       x_first_el = six.next(data())
-      types = [dtypes.int64] + [
-        dtypes.as_dtype(col.dtype) for col in x_first_el.values()
-        ]
-      queue_shapes = [()] + [col.shape for col in x_first_el.values()]
+      types = [dtypes.as_dtype(col.dtype) for col in x_first_el.values()]
+      queue_shapes = [col.shape for col in x_first_el.values()]
       get_feed_fn = _GeneratorFeedFn
     elif HAS_PANDAS and isinstance(data, pd.DataFrame):
       types = [
