@@ -102,10 +102,10 @@ class _GeneratorFeedFn(object):
                seed=None,
                num_epochs=None):
     first_sample = next(generator())
-    if len(placeholders) != len(first_sample) + 1:
+    if len(placeholders) != len(first_sample):
       raise ValueError("Expected {} placeholders; got {}.".format(
         len(first_sample), len(placeholders)))
-    self._col_placeholders = placeholders[1:]
+    self._col_placeholders = placeholders
     self._generator_function = generator
     self._iterator = generator()
     self._batch_size = batch_size
@@ -279,10 +279,8 @@ def enqueue_data(data,
       queue_shapes = [(), data.shape[1:]]
       get_feed_fn = _ArrayFeedFn
     elif isinstance(data, collections.OrderedDict):
-      types = [dtypes.int64] + [
-        dtypes.as_dtype(col.dtype) for col in data.values()
-        ]
-      queue_shapes = [()] + [col.shape[1:] for col in data.values()]
+      types = [dtypes.as_dtype(col.dtype) for col in data.values()]
+      queue_shapes = [col.shape[1:] for col in data.values()]
       get_feed_fn = _OrderedDictNumpyFeedFn
     elif isinstance(data, FunctionType):
       x_first_el = six.next(data())

@@ -181,8 +181,8 @@ class GeneratorIoTest(test.TestCase):
   
     y = ["label", "target"]
     with self.test_session():
-      with self.assertRaisesRegexp(TypeError,
-                                   'target_key or target_key[i] not in yielded dict'):
+      with self.assertRaisesRegexp(KeyError,
+                                   'target_key or target_key\[i\] not in yielded dict'):
         failing_input_fn = generator_io.generator_input_fn(
           generator, target_key=y, batch_size=2, shuffle=False, num_epochs=1)
         failing_input_fn()

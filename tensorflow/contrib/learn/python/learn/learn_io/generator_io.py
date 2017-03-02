@@ -88,14 +88,17 @@ def generator_input_fn(x,
   if target_key is not None:
       if isinstance(target_key, str):
         target_key = [target_key]
-      if isinstance(target_key, list):
+      elif isinstance(target_key, list):
         for item in target_key:
           if not isinstance(item, str):
             raise TypeError(
               'target_key must be str or list of str ; got {}'.format(type(item).__name__))
           if item not in input_keys:
             raise KeyError('target_key or target_key[i] not in yielded dict ; got {}'.format(item))
-  
+      else:
+        raise TypeError('target_key must be str or list of str ; got {}'.format(
+          type(target_key).__name__))
+ 
   def _generator_input_fn():
     """generator input function."""
     queue = feeding_functions.enqueue_data(
