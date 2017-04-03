@@ -28,7 +28,6 @@ import numpy as np
 import six
 
 from tensorflow.core.framework import summary_pb2
-from tensorflow.core.protobuf import config_pb2
 from tensorflow.python.client import session as tf_session
 from tensorflow.python.estimator import model_fn as model_fn_lib
 from tensorflow.python.estimator import run_config
@@ -313,7 +312,7 @@ class Estimator(object):
           session_creator=training.ChiefSessionCreator(
               checkpoint_filename_with_path=checkpoint_path,
               scaffold=estimator_spec.scaffold,
-              config=config_pb2.ConfigProto(allow_soft_placement=True)),
+              config=self._config.configproto),
           hooks=hooks) as mon_sess:
         while not mon_sess.should_stop():
           preds_evaluated = mon_sess.run(predictions)
@@ -575,7 +574,7 @@ class Estimator(object):
           chief_only_hooks=chief_hooks + estimator_spec.training_chief_hooks,
           save_checkpoint_secs=0,  # Saving is handled by a hook.
           save_summaries_steps=self._config.save_summary_steps,
-          config=config_pb2.ConfigProto(allow_soft_placement=True)) as mon_sess:
+          config=self._config.configproto) as mon_sess:
         loss = None
         while not mon_sess.should_stop():
           _, loss = mon_sess.run([estimator_spec.train_op, estimator_spec.loss])
@@ -630,7 +629,7 @@ class Estimator(object):
           eval_ops=update_op,
           final_ops=eval_dict,
           hooks=hooks,
-          config=config_pb2.ConfigProto(allow_soft_placement=True))
+          config=self._config.configproto)
 
       _write_dict_to_summary(
           output_dir=eval_dir,

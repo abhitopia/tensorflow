@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from tensorflow.core.protobuf import config_pb2
+
 
 class TaskType(object):
   MASTER = 'master'
@@ -83,3 +85,8 @@ class RunConfig(object):
   @property
   def keep_checkpoint_every_n_hours(self):
     return 10000
+
+
+  @property
+  def configproto(self):
+   return config_pb2.ConfigProto(allow_soft_placement=True)
